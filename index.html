@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="id"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>BAKI-FIT: Shadow & Steel</title>
+<style>
+:root{--bg:#0A0A0A;--card:#161616;--line:#2a2a2a;--red:#FF1E38;--tx:#F2F2F2;--mut:#9a9a9a;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box;margin:0;-webkit-tap-highlight-color:transparent}
+body{background:var(--bg);color:var(--tx);font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;display:flex;justify-content:center}
+.app{width:100%;max-width:430px;min-height:100vh;padding:18px 16px 96px}
+h1,h2,.big{font-family:Impact,"Arial Narrow Bold","Arial Black",sans-serif;font-weight:400;letter-spacing:.5px}
+.logo{font-size:26px;line-height:1}.logo b{color:var(--red);font-weight:400}
+.sub{color:var(--mut);font-size:13px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-top:12px}
+.hero{border-left:4px solid var(--red);border-radius:4px 14px 14px 4px}
+.big{font-size:40px;line-height:1.05}
+.bar{height:8px;background:#262626;border-radius:4px;margin-top:10px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--red);transition:width .4s}
+.row{display:flex;gap:10px}.row>*{flex:1}
+.stat .big{font-size:34px;color:var(--red)}
+.btn{display:block;width:100%;min-height:56px;border:0;border-radius:12px;background:var(--red);color:#fff;font:700 17px system-ui;cursor:pointer}
+.btn.ghost{background:transparent;border:1px solid var(--line);color:var(--tx);min-height:48px}
+.btn:focus-visible,.nav button:focus-visible,.chip:focus-visible{outline:2px solid #fff;outline-offset:2px}
+.nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:#0f0f0f;border-top:1px solid var(--line);display:flex;padding-bottom:env(safe-area-inset-bottom,0px)}
+.nav button{flex:1;background:none;border:0;color:var(--mut);padding:12px 0;font:600 12px system-ui;min-height:58px}
+.nav button.on{color:var(--red)}.nav span{display:block;font-size:20px}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:4px 0}
+.chip{flex:0 0 auto;min-width:52px;min-height:44px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--tx);font-weight:600;padding:0 12px}
+.chip.on{background:var(--red);border-color:var(--red)}.chip.done::after{content:" ✓"}
+.ex{padding:12px 0;border-top:1px solid var(--line)}.ex:first-child{border:0}
+.ex b{display:block}.tag{color:var(--red);font-size:13px;font-weight:700}
+.tip{background:#1d1d1d;border-radius:10px;padding:12px;margin-top:12px;font-size:15px;color:#ddd}
+.rest{position:fixed;inset:0;background:rgba(10,10,10,.96);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;z-index:9;padding:24px}
+.rest .big{font-size:110px;color:var(--red)}
+.rest .btn{max-width:320px}
+input,select{width:100%;min-height:48px;margin-top:6px;background:#0f0f0f;border:1px solid var(--line);border-radius:10px;color:var(--tx);font-size:18px;padding:0 12px}.hb{display:flex;align-items:flex-end;gap:8px;height:120px;margin-top:10px}.hb div{flex:1;text-align:center;font-size:11px;color:var(--mut)}.hb i{display:block;background:var(--red);border-radius:4px 4px 0 0;min-height:3px;margin-bottom:4px}summary{cursor:pointer;min-height:24px}details p{margin-top:8px}.dots{display:flex;gap:6px;margin-top:10px}.dots div{flex:1;text-align:center;font-size:11px;color:var(--mut)}.dots i{display:block;height:28px;border-radius:8px;background:#262626;margin-bottom:4px}.dots i.f{background:var(--red)}.wt{display:flex;align-items:center;gap:12px;margin-top:10px}.wt button{flex:0 0 56px}.wt .big{flex:1;text-align:center;font-size:34px}.hide{display:none!important}
+h2{font-size:24px;margin:20px 0 4px}
+.warn{font-size:12px;color:var(--mut);margin-top:16px}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+:root[data-x]{}
+</style><link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0A0A0A">
+<link rel="apple-touch-icon" href="icon-192.png">
+</head><body>
+<div class="app" id="app"></div>
+<nav class="nav" id="nav">
+<button data-t="home"><span>⌂</span>Dashboard</button>
+<button data-t="train"><span>⚔</span>Latihan</button>
+<button data-t="plan"><span>☰</span>Program</button>
+<button data-t="hist"><span>▮</span>Riwayat</button>
+<button data-t="nut"><span>◉</span>Nutrisi</button>
+</nav>
+<div class="rest hide" id="rest" role="dialog" aria-label="Istirahat">
+<div class="sub">Istirahat</div><div class="big" id="rt">60</div><div class="sub" id="rn"></div>
+<button class="btn" id="r15">+15 detik</button><button class="btn ghost" id="rs">Lewati istirahat</button></div>
+<script>
+const LV=[["New Blood",0],["Street Brawler",6],["Underground Fighter",16],["Demon Back",32],["Ogre Tier",52]];
+const E=(n,s,r,tip,k=6,rest=45)=>({n,s,r,tip,k,rest});
+const W=(n,r,tip,k=20)=>({n,s:1,r,tip,k,rest:0});
+const cool=[W("Pendinginan: peregangan dada & bahu","3 mnt","Tahan 20 detik per sisi, napas dalam, jangan memantul.",8),W("Pendinginan: hamstring & paha depan","2 mnt","Tarik perlahan sampai terasa regang, bukan sakit.",6)];
+const D=[
+{d:"Sen",t:"Upper Body: Push & Core",w:[W("Arm circles","2 mnt","Lingkaran kecil ke besar, bahu rileks, dada terbuka.",8),W("Shoulder mobility","3 mnt","Putar bahu ke belakang, tulang belikat bergerak penuh.",8)],m:[E("Chair Dips",3,"12","Pakai kursi kokoh dan tidak licin. Siku mengarah ke belakang, turun sampai siku sekitar 90 derajat, bahu jauh dari telinga.",8,60),E("Plank Shoulder Taps",3,"20","Kaki dibuka lebar agar stabil, sentuh bahu bergantian tanpa memutar pinggul. Kencangkan core.",7,45),E("Bear Crawl",3,"30 dtk","Lutut melayang 2-3 cm dari lantai, punggung rata, gerak tangan dan kaki berlawanan. Pelan dan terkontrol.",9,60),E("Plank to Downward Dog",3,"12","Core kencang saat berpindah, dorong lantai dengan bahu. Jangan melengkungkan punggung bawah.",7,45),E("Leg Raises",3,"15","Telentang, punggung bawah menempel lantai, turunkan kaki pelan tanpa menyentuh lantai.",6,45)],f:[W("Finisher: Shadow boxing intens","3 mnt","Kuda-kuda stabil, dagu turun, pukulan cepat dari putaran pinggul. Napas keluar tiap pukulan.",35)]},
+{d:"Sel",t:"Lower Body: Explosive Fat Burn",w:[W("High knees","3 mnt","Angkat lutut setinggi pinggul, mendarat di bola kaki.",30),W("Dynamic lunges","2 mnt","Langkah panjang, lutut depan sejajar jari kaki.",12)],m:[E("Bodyweight Squats",4,"20","Kaki selebar bahu, pinggul mundur, lutut searah jari kaki, tumit menapak.",7,45),E("Jump Squats",3,"12","Mendarat lembut dengan lutut ditekuk. Hentikan bila lutut sakit.",11,60),E("Lunges",3,"12 per kaki","Badan tegak, lutut belakang turun hampir ke lantai, dorong dari tumit depan.",9,60),E("Calf Raises",4,"25","Naik setinggi mungkin, tahan 1 detik di atas, turun pelan.",4,30),E("Glute Bridges",3,"20","Dorong dari tumit, remas bokong di atas, jangan melengkungkan punggung bawah.",5,45)],f:[E("Finisher: Mountain Climbers",3,"45 dtk","Bahu di atas tangan, pinggul rendah, kaki bergantian cepat.",10,45)]},
+{d:"Rab",t:"Active Recovery & Mobility",w:[],m:[W("Peregangan menyeluruh","10 mnt","Leher, bahu, punggung, pinggul, kaki. Tahan 30 detik, tanpa memaksa.",25),W("Yoga dasar / mobility flow","20 mnt","Child pose, cat-cow, downward dog, pigeon. Napas lambat dan dalam.",50),W("Jalan santai","30 mnt","Tempo nyaman, masih bisa berbicara. Bantu pemulihan dan bakar lemak.",100)],f:[]},
+{d:"Kam",t:"Upper Body: Pull & Grip",w:[W("Scapular pull hangs","2 mnt","Gantung, tarik tulang belikat turun tanpa menekuk siku.",8),W("Wrist mobility","3 mnt","Putar dan regangkan pergelangan tangan perlahan.",5)],m:[E("Australian Pull-ups / Inverted Rows",4,"12","Gunakan meja kokoh. Badan lurus, tarik dada ke tepi meja, jepit tulang belikat.",8,60),E("Pull-ups / Negative Pull-ups",3,"max reps","Pull-up di palang, atau negatif: lompat ke atas, turun 4 detik. Hindari mengayun.",10,90),E("Doorframe Rows",3,"15","Pegang kusen pintu kokoh, condong ke belakang, tarik dada. Cek kekuatan kusen dulu.",7,60),E("Superman holds",3,"45 dtk","Angkat dada dan kaki sedikit, leher netral, napas teratur.",5,45),E("Dead Hang",3,"max durasi","Bahu aktif, genggaman penuh. Turun bila genggaman lepas, jangan jatuh.",6,60)],f:[]},
+{d:"Jum",t:"Full Body & HIIT Fat Loss",w:[W("Jumping jacks","5 mnt","Tempo stabil, mendarat lembut di bola kaki.",35)],m:[E("Burpees",3,"10","Lompat mundur dengan core kencang. Tanpa lompat atas bila lutut bermasalah.",14,60),E("Jump Lunges",3,"10","Mendarat pelan, lutut depan tidak melewati jari kaki.",11,60),E("Push-up to Renegade Row",3,"12","Kaki lebar agar stabil, jaga pinggul tidak berputar saat menarik siku.",10,60),E("Squat Thrusts",3,"15","Dari jongkok, kaki ke belakang dan kembali cepat. Punggung rata.",10,45)],f:[E("Finisher: High-intensity plank",3,"1 mnt","Siku di bawah bahu, rapatkan bokong dan perut. Berhenti bila punggung melengkung.",9,45)]},
+{d:"Sab",t:"Core & Endurance: Demon Back",w:[W("Cat-cow & torso rotation","3 mnt","Gerak lambat, bangunkan tulang belakang.",8)],m:[E("Hollow Body Hold",3,"30 dtk","Punggung bawah menempel lantai, lengan dan kaki lurus. Tekuk lutut bila belum kuat.",6,45),E("Bicycle Crunches",3,"20","Siku ke lutut berlawanan, jangan menarik leher.",7,45),E("Russian Twists",3,"30","Dada terangkat, putar dari tulang rusuk, bukan hanya lengan.",7,45),E("Side Plank",3,"45 dtk / sisi","Tubuh satu garis, pinggul terangkat. Lakukan kedua sisi.",6,30),E("Prone Cobra Extensions",3,"15","Angkat dada pelan, bahu turun dari telinga, jangan menengadah.",5,45)],f:[]},
+{d:"Min",t:"Total Rest & Regeneration",w:[],m:[W("Hidrasi optimal","8 gelas","Minum teratur sepanjang hari. Otot tumbuh saat istirahat.",0),W("Tidur 7-9 jam","malam ini","Kunci pemulihan dan pembakaran lemak.",0),W("Refleksi mingguan","5 mnt","Catat: sesi selesai, energi, bagian tubuh yang pegal, target minggu depan.",0)],f:[]}
+];
+const DET={"Chair Dips":["Triceps, dada bawah, bahu depan","Tekuk lutut, kaki dekat kursi","Luruskan kaki atau angkat satu kaki","Siku melebar, bahu naik ke telinga"],
+"Plank Shoulder Taps":["Core, bahu, otot stabilisator","Lakukan dari lutut","Kaki dirapatkan, tahan sentuhan 1 detik","Pinggul bergoyang"],
+"Bear Crawl":["Bahu, core, paha depan","Tempo lebih lambat, jarak pendek","Maju lalu mundur, lutut makin rendah","Pinggul terlalu tinggi"],
+"Plank to Downward Dog":["Bahu, core, hamstring","Kurangi jangkauan gerak","Tambahkan tahan 2 detik di tiap posisi","Punggung melengkung"],
+"Leg Raises":["Perut bawah, fleksor pinggul","Tekuk lutut","Tahan 2 detik di bawah","Punggung bawah terangkat"],
+"Bodyweight Squats":["Paha depan, bokong, core","Squat ke kursi","Tahan 2 detik di bawah","Tumit terangkat, lutut menekuk ke dalam"],
+"Jump Squats":["Paha, bokong, betis, kardio","Squat cepat tanpa lompat","Tambahkan tahan 1 detik di posisi bawah","Mendarat keras dengan lutut lurus"],
+"Lunges":["Paha, bokong, keseimbangan","Pegang dinding","Tahan 2 detik di bawah","Lutut depan melewati jari kaki"],
+"Calf Raises":["Betis","Pegang dinding","Satu kaki bergantian","Bergoyang ke samping"],
+"Glute Bridges":["Bokong, hamstring","Tahan lebih singkat","Satu kaki bergantian","Punggung bawah melengkung"],
+"Australian Pull-ups / Inverted Rows":["Punggung, biseps, bahu belakang","Badan lebih tegak","Kaki lebih jauh atau ditinggikan","Pinggul turun"],
+"Pull-ups / Negative Pull-ups":["Punggung lebar, biseps, genggaman","Negatif 5 detik","Pull-up penuh dengan jeda 1 detik","Mengayun, bahu naik ke telinga"],
+"Doorframe Rows":["Punggung, biseps","Berdiri lebih tegak","Condong lebih ke belakang","Pinggul menekuk"],
+"Superman holds":["Punggung bawah, bokong","Angkat dada saja","Angkat lengan dan kaki lebih tinggi","Leher mendongak"],
+"Dead Hang":["Genggaman, bahu, lengan bawah","Satu kaki bertumpu","Tarik bahu aktif","Bahu naik ke telinga"],
+"Burpees":["Seluruh tubuh, kardio","Tanpa lompat, melangkah","Tambahkan push-up atau lompat tinggi","Punggung bawah turun"],
+"Jump Lunges":["Paha, bokong, kardio","Lunges biasa","Lompat lebih tinggi","Mendarat kaku"],
+"Push-up to Renegade Row":["Dada, punggung, core","Kurangi repetisi, lutut menapak","Tambahkan beban botol air","Pinggul berputar"],
+"Squat Thrusts":["Kaki, core, kardio","Lompat mundur satu kaki","Tambahkan lompat atas","Pinggul terlalu tinggi"],
+"Hollow Body Hold":["Perut dalam, fleksor pinggul","Tekuk lutut","Lengan lurus ke belakang kepala","Punggung bawah terangkat"],
+"Bicycle Crunches":["Perut samping, oblik","Tempo lambat","Tahan 1 detik di tiap sisi","Menarik leher"],
+"Russian Twists":["Oblik, perut","Kaki di lantai","Kaki terangkat","Hanya menggerakkan lengan"],
+"Side Plank":["Oblik, pinggul, bahu","Lutut menapak","Angkat kaki atas","Pinggul turun"],
+"Prone Cobra Extensions":["Punggung bawah, bahu belakang","Angkat lebih rendah","Tahan 2 detik di atas","Menengadah berlebihan"]};
+const det=n=>{const d=DET[n];return d?`<details class="tip"><summary><b>Detail gerakan</b></summary><p><b>Otot:</b> ${d[0]}</p><p><b>Lebih mudah:</b> ${d[1]}</p><p><b>Lebih sulit:</b> ${d[2]}</p><p><b>Kesalahan umum:</b> ${d[3]}</p></details>`:""};
+const $=s=>document.querySelector(s),KEY="bakifit1";
+let S={log:[]};try{S=JSON.parse(localStorage.getItem(KEY))||S}catch(e){}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
+const iso=d=>d.toISOString().slice(0,10),today=()=>{const d=new Date();d.setMinutes(d.getMinutes()-d.getTimezoneOffset());return iso(d)};
+const di=()=>(new Date().getDay()+6)%7;
+let tab="home",sel=di(),run=null;
+function stats(){const n=S.log.length+(S.base||0),kc=S.log.reduce((a,b)=>a+b.k,0);let l=0;LV.forEach((x,i)=>{if(n>=x[1])l=i});
+const days=new Set(S.log.map(x=>x.d));let st=0,c=new Date();c.setMinutes(c.getMinutes()-c.getTimezoneOffset());if(!days.has(iso(c)))c.setDate(c.getDate()-1);while(days.has(iso(c))){st++;c.setDate(c.getDate()-1)}
+return{n,kc,l,st,nx:LV[l+1]}}
+const TD=[0,1,3,4,5];
+function wk(){const c=new Date();c.setMinutes(c.getMinutes()-c.getTimezoneOffset());let n=0;const h=D.map((x,i)=>{const e=new Date(c);e.setDate(e.getDate()-(di()-i));const f=S.log.some(l=>l.d===iso(e));if(f&&TD.includes(i))n++;return`<div><i class="${f?"f":""}"></i>${x.d}</div>`}).join("");return`<div class="card"><b>Minggu ini: ${n} dari 5 sesi latihan</b><div class="dots">${h}</div></div>`}
+function wa(){S.w=S.w||{};const n=S.w[today()]||0;return`<div class="card"><b>Air minum hari ini</b><div class="wt"><button class="btn ghost" data-w="-1" aria-label="Kurangi">-</button><div class="big">${n}/8</div><button class="btn" data-w="1" aria-label="Tambah">+</button></div><div class="sub" style="text-align:center">gelas</div></div>`}
+function tc(){const T=S.tests||[],l=T[T.length-1];return`<div class="card"><b>Tes kekuatan awal</b><p class="sub" style="margin:4px 0 10px">${l?"Skor terakhir "+l.pts+" dari 6 ("+l.d+")":"Belum dilakukan. 3 tes singkat untuk menentukan level awal."}</p><button class="btn ghost" data-t2="test">${l?"Ulangi tes":"Mulai tes"}</button></div>`}
+function home(){const s=stats(),p=s.nx?Math.min(100,(s.n-LV[s.l][1])/(s.nx[1]-LV[s.l][1])*100):100,t=D[di()];
+return`<div class="logo">BAKI-FIT <b>SHADOW & STEEL</b></div>
+<div class="card hero"><div class="sub">Level ${s.l+1} dari 5</div><div class="big">${LV[s.l][0]}</div>
+<div class="bar"><i style="width:${p}%"></i></div><div class="sub" style="margin-top:6px">${s.nx?`${s.nx[1]-s.n} sesi lagi menuju ${s.nx[0]}`:"Level tertinggi. Pertahankan."}</div></div>
+<div class="row"><div class="card stat"><div class="sub">Streak</div><div class="big">${s.st}</div><div class="sub">hari</div></div>
+<div class="card stat"><div class="sub">Kalori terbakar</div><div class="big">${Math.round(s.kc)}</div><div class="sub">kkal total</div></div></div>
+<div class="card"><div class="sub">Hari ini, ${t.d}</div><h2 style="margin-top:2px">${t.t}</h2>
+<button class="btn" style="margin-top:12px" data-go="${di()}">Mulai latihan</button></div>
+${rb()}${tc()}${wk()}${wa()}<div class="card"><label class="sub" for="bw">Berat badan (kg), untuk estimasi kalori</label><input id="bw" type="number" inputmode="decimal" min="30" max="250" value="${S.bw||70}"></div>
+<button class="btn ghost" style="margin-top:12px" data-t2="set">Pengaturan, cadangan, dan reset</button>
+<p class="warn">Kalori adalah estimasi kasar. Hentikan latihan bila pusing, nyeri tajam, atau sesak. Konsultasi dokter dulu bila punya kondisi kesehatan.</p>`}
+function steps(d){const a=[];const P=x=>{const m=/(\d+)\s*(dtk|mnt)/.exec(x.r);return m?{...x,sec:m[1]*(m[2]=="mnt"?60:1)}:x};d.w.forEach(x=>a.push({...x,ph:"Pemanasan"}));d.m.forEach(x=>a.push({...x,ph:d.m[0].rest===0&&d.d!=="Min"&&d.d!=="Rab"?"":"Latihan Inti"}));d.f.forEach(x=>a.push({...x,ph:"Finisher"}));if(d.d!=="Min"&&d.d!=="Rab")cool.forEach(x=>a.push({...x,ph:"Pendinginan"}));else if(d.d==="Rab")a.push({...cool[0],ph:"Pendinginan"});return a.map(P)}
+function sug(){const l=[...S.log].reverse().find(x=>x.i===sel&&x.rpe);if(!l)return"";const m={Mudah:"Terakhir terasa mudah. Tambah 2 repetisi atau kurangi istirahat 10 detik.",Pas:"Terakhir terasa pas. Tambah 1 repetisi bila gerakan masih rapi.",Berat:"Terakhir terasa berat. Kurangi 2 repetisi atau pakai versi lebih mudah di Detail gerakan."};return`<div class="tip"><b>Saran dari sesi ${l.d}</b>${m[l.rpe]}</div>`}
+function train(){const d=D[sel];const st=steps(d),done=S.log.some(x=>x.d===today()&&x.i===sel);
+let h=`<div class="logo">Latihan</div><div class="chips">${D.map((x,i)=>`<button class="chip ${i===sel?"on":""} ${S.log.some(l=>l.d===today()&&l.i===i)?"done":""}" data-sel="${i}">${x.d}</button>`).join("")}</div>
+<h2>${d.t}</h2>${sug()}<div class="card">`;
+st.forEach(x=>h+=`<div class="ex"><span class="tag">${x.ph}</span><b>${x.n}</b><span class="sub">${x.s>1?x.s+" x ":""}${x.r}</span></div>`);
+return h+`</div><button class="btn" data-go="${sel}">${done?"Ulangi sesi":"Mulai sesi"}</button>`}
+function plan(){return`<div class="logo">Program Mingguan</div>`+D.map(d=>`<div class="card"><div class="tag">${d.d}</div><b>${d.t}</b><div class="sub">${d.m.map(x=>x.n).join(", ")}</div></div>`).join("")+`<p class="warn">Progres level: 6, 16, 32, dan 52 sesi selesai membuka level 2 sampai 5. Naikkan repetisi 1-2 per minggu saat set terasa ringan.</p>`}
+let ct=null;
+function runUI(){clearInterval(ct);const r=run,x=r.st[r.i];const tot=r.st.length;
+$("#app").innerHTML=`<div class="row" style="align-items:center"><div class="sub">${D[r.d].t}</div><button class="chip" style="flex:0 0 auto" data-q="1">Keluar</button></div>
+<div class="bar"><i style="width:${r.i/tot*100}%"></i></div>
+<div class="card hero" style="margin-top:18px"><span class="tag">${x.ph}</span><h2 style="font-size:32px;margin:4px 0">${x.n}</h2>
+<div class="big" style="color:var(--red);font-size:44px">${x.r}</div><div class="sub">${x.s>1?"Set "+(r.s+1)+" dari "+x.s:"Gerakan "+(r.i+1)+" dari "+tot}</div>
+<div class="tip"><b>Tips form</b>${x.tip}</div>${det(x.n)}</div>
+${x.sec?`<button class="btn ghost" style="margin-top:12px" id="ct">Mulai timer ${x.sec>=120?x.sec/60+" mnt":x.sec+" dtk"}</button>`:""}
+<button class="btn" style="margin-top:12px" id="ok">${x.s>1?"Selesai set":"Selesai"}</button>`}
+function finish(){const k=Math.round(run.k*(S.bw||70)/70);S.log.push({d:today(),i:run.d,k});save();const t=run.d;run=null;
+$("#app").innerHTML=`<div class="logo">Sesi selesai</div><div class="card hero"><div class="big">${k} kkal</div><p class="sub">${D[t].t} tuntas. Minum air dan makan protein dalam 1-2 jam.</p></div><div class="card"><b>Seberapa berat sesi ini?</b><div class="row" style="margin-top:10px">${["Mudah","Pas","Berat"].map(x=>`<button class="btn ghost" data-rpe="${x}">${x}</button>`).join("")}</div><p class="sub" id="rm" style="margin-top:8px"></p></div><button class="btn" data-t2="home">Kembali ke dashboard</button>`;$("#nav").classList.remove("hide")}
+let tm=null;
+function rest(sec,nm,cb){let t=sec;$("#rest").classList.remove("hide");$("#rn").textContent="Berikutnya: "+nm;$("#rt").textContent=t;clearInterval(tm);
+const end=()=>{clearInterval(tm);$("#rest").classList.add("hide");cb()};
+tm=setInterval(()=>{t--;$("#rt").textContent=t;if(t<=0)end()},1000);
+$("#r15").onclick=()=>{t+=15;$("#rt").textContent=t};$("#rs").onclick=end}
+let pend=null;
+function next(){const r=run;r.i++;r.s=0;if(r.i>=r.st.length)return finish();runUI()}
+function done(){const r=run,x=r.st[r.i];r.k+=x.k;r.s++;
+if(r.s<x.s){if(x.rest>0)rest(x.rest,x.n+" set "+(r.s+1),runUI);else runUI();return}
+const n=r.st[r.i+1];if(!n)return next();
+if(x.rest>0&&n.rest>0)rest(x.rest,n.n,next);else next()}
+function hist(){const ds=[...Array(7)].map((_,i)=>{const c=new Date();c.setMinutes(c.getMinutes()-c.getTimezoneOffset());c.setDate(c.getDate()-6+i);const k=iso(c);return{l:["Min","Sen","Sel","Rab","Kam","Jum","Sab"][c.getDay()],v:S.log.filter(x=>x.d===k).reduce((a,b)=>a+b.k,0)}});const mx=Math.max(1,...ds.map(x=>x.v));
+const L=S.log.slice(-8).reverse(),B=S.wl||[],bd=B.length>1?B[B.length-1].kg-B[0].kg:0;
+return`<div class="logo">Riwayat</div><div class="card"><b>Kalori 7 hari terakhir</b><div class="hb">${ds.map(x=>`<div><span>${x.v||""}</span><i style="height:${x.v/mx*80}px"></i>${x.l}</div>`).join("")}</div></div>
+<div class="card"><b>Berat badan</b>${B.length?`<div class="big" style="color:var(--red);margin-top:6px">${B[B.length-1].kg} kg</div><div class="sub">${B.length>1?"Perubahan sejak "+B[0].d+": "+(bd>0?"+":"")+bd.toFixed(1)+" kg":"Perbarui di Dashboard untuk melihat perubahan."}</div>`:'<p class="sub" style="margin-top:8px">Isi berat badan di Dashboard untuk mulai mencatat.</p>'}</div>
+<div class="card"><b>Sesi terakhir</b>${L.length?L.map(x=>`<div class="ex"><b>${D[x.i].t}</b><span class="sub">${x.d} - ${x.k} kkal</span></div>`).join(""):'<p class="sub" style="margin-top:8px">Belum ada sesi. Selesaikan satu latihan untuk mulai mencatat.</p>'}</div>`}
+const sc=(v,a,b)=>v>=b?2:v>=a?1:0;
+function test(){const T=S.tests||[],l=T[T.length-1];let r="";
+if(l){const lv=l.pts<=1?0:l.pts<=3?1:2,w=[["kaki",l.a],["core",l.b],["tarikan dan genggaman",l.c]].sort((x,y)=>x[1]-y[1])[0][0];
+r=`<div class="card hero"><div class="sub">Hasil ${l.d}</div><div class="big">${LV[lv][0]}</div><p class="sub">Skor ${l.pts} dari 6. Level awal Anda diatur ke Level ${lv+1}. Bagian yang perlu diperkuat: ${w}.</p></div>`+(T.length>1?`<div class="card"><b>Riwayat tes</b>${T.slice(-5).reverse().map(x=>`<div class="ex"><span class="sub">${x.d}</span><br>Squat ${x.sq}, plank ${x.pl} dtk, dead hang ${x.dh} dtk</div>`).join("")}</div>`:"")}
+return`<div class="logo">Tes Kekuatan Awal</div><p class="sub" style="margin-top:6px">Lakukan setelah pemanasan. Istirahat 3 menit antar tes. Berhenti bila form rusak atau terasa nyeri.</p>
+<div class="card"><label for="t1"><b>Bodyweight squat dalam 60 detik</b></label><div class="sub">Jumlah repetisi dengan form benar</div><input id="t1" type="number" inputmode="numeric" min="0" max="150">
+<label for="t2" style="display:block;margin-top:14px"><b>Plank</b></label><div class="sub">Detik sampai pinggul turun atau naik</div><input id="t2" type="number" inputmode="numeric" min="0" max="600">
+<label for="t3" style="display:block;margin-top:14px"><b>Dead hang</b></label><div class="sub">Detik menggantung di palang atau pegangan kokoh</div><input id="t3" type="number" inputmode="numeric" min="0" max="300">
+<button class="btn" id="ts" style="margin-top:16px">Simpan dan tentukan level</button><p class="sub" id="tm" style="margin-top:8px"></p></div>`+r}
+function nut(){const p=S.pf||{},w=S.bw||70;let r="";
+if(p.a&&p.a<18)r=`<div class="tip">Defisit kalori tidak disarankan untuk usia di bawah 18 tahun. Konsultasikan dengan dokter atau ahli gizi.</div>`;
+else if(p.h&&p.a){const b=10*w+6.25*p.h-5*p.a+(p.sx==="L"?5:-161),t=Math.round(Math.max(b,b*1.45*.8)/10)*10,pr=Math.round(w*1.8),f=Math.round(w*.8),c=Math.max(0,Math.round((t-pr*4-f*9)/4));
+r=`<div class="card hero"><div class="sub">Target harian</div><div class="big">${t} kkal</div><div class="row" style="margin-top:12px;text-align:center"><div><b>${pr} g</b><div class="sub">protein</div></div><div><b>${c} g</b><div class="sub">karbohidrat</div></div><div><b>${f} g</b><div class="sub">lemak</div></div></div><p class="sub" style="margin-top:10px">Air minum sekitar ${(w*.035).toFixed(1)} liter. Defisit sekitar 20% dari kebutuhan, tidak di bawah BMR (${Math.round(b)} kkal). Perkiraan turun 0,3-0,5 kg per minggu.</p></div>`}
+return`<div class="logo">Nutrisi</div><div class="card"><b>Hitung target kalori</b><div class="sub">Memakai berat badan di Dashboard (${w} kg)</div>
+<label for="nh" class="sub" style="display:block;margin-top:10px">Tinggi (cm)</label><input id="nh" type="number" inputmode="numeric" value="${p.h||""}">
+<label for="na" class="sub" style="display:block;margin-top:10px">Usia</label><input id="na" type="number" inputmode="numeric" value="${p.a||""}">
+<label for="ns" class="sub" style="display:block;margin-top:10px">Jenis kelamin</label><select id="ns"><option value="L" ${p.sx==="L"?"selected":""}>Laki-laki</option><option value="P" ${p.sx==="P"?"selected":""}>Perempuan</option></select>
+<button class="btn" id="nc" style="margin-top:14px">Hitung</button></div>${r}
+<h2>Contoh menu harian</h2><div class="card">${[["Sarapan","2 telur rebus, 1 potong tempe panggang, 1 pisang","±400 kkal"],["Makan siang","Nasi 100 g, ayam atau ikan 120 g, tumis sayur, tahu","±550 kkal"],["Camilan","Yoghurt plain, kacang rebus, atau buah","±150 kkal"],["Makan malam","Ayam bakar tanpa kulit atau pepes ikan, sayur bening, ubi rebus 100 g","±450 kkal"]].map(x=>`<div class="ex"><span class="tag">${x[2]}</span><b>${x[0]}</b><span class="sub">${x[1]}</span></div>`).join("")}</div>
+<div class="card"><b>Seputar latihan</b><p class="sub" style="margin-top:6px">Sebelum latihan (60-90 menit): pisang atau roti tawar. Setelah latihan (1-2 jam): protein dan karbohidrat, misalnya telur atau tempe dengan nasi. Tidur 7-9 jam membantu pemulihan.</p></div>
+<p class="warn">Ini panduan umum, bukan saran medis. Jika punya kondisi kesehatan, sedang hamil, atau menyusui, konsultasikan dengan dokter atau ahli gizi.</p>`}
+let cf=null,M="";
+function rb(){const r=S.rm;if(!r||!r.on||!TD.includes(di()))return"";const n=new Date(),p=r.t.split(":");if(n.getHours()*60+n.getMinutes()<p[0]*60+ +p[1])return"";if(S.log.some(l=>l.d===today()&&l.i===di()))return"";return`<div class="tip" style="border-left:4px solid var(--red);margin-top:12px"><b>Waktunya latihan</b>${D[di()].t} belum selesai hari ini.</div>`}
+setInterval(()=>{const r=S.rm;if(!r||!r.on||!TD.includes(di())||S.nt===today()||S.log.some(l=>l.d===today()&&l.i===di()))return;const n=new Date(),p=r.t.split(":");if(n.getHours()*60+n.getMinutes()>=p[0]*60+ +p[1]&&"Notification" in window&&Notification.permission==="granted"){try{new Notification("BAKI-FIT",{body:"Waktunya latihan: "+D[di()].t})}catch(e){}S.nt=today();save()}},60000);
+function set(){const r=S.rm||{on:false,t:"17:00"},l=S.log[S.log.length-1],cn=(a,tx,ok)=>`<button class="btn ghost" style="margin-top:10px" data-act="${a}" ${ok?"":"disabled"}>${tx}</button>`;
+return`<div class="logo">Pengaturan</div>${M?`<div class="tip" style="border-left:4px solid var(--red)">${M}</div>`:""}
+<div class="card"><b>Pengingat latihan</b><p class="sub" style="margin:4px 0 8px">Pengingat hanya muncul saat aplikasi terbuka. Browser tidak mengizinkan alarm di latar belakang. Notifikasi butuh izin Anda.</p>
+<label class="sub" for="rmt">Jam pengingat</label><input id="rmt" type="time" value="${r.t}">
+<label class="sub" for="rmo" style="display:block;margin-top:10px">Status</label><select id="rmo"><option value="1" ${r.on?"selected":""}>Aktif</option><option value="0" ${r.on?"":"selected"}>Nonaktif</option></select>
+<button class="btn" style="margin-top:12px" data-act="rmsave">Simpan pengingat</button></div>
+<div class="card"><b>Reset latihan</b><p class="sub" style="margin:4px 0 0">Hapus sesi terakhir untuk kembali ke kondisi sebelumnya, atau reset semua progres ke awal. Sebelum reset, data otomatis dicadangkan sehingga bisa dipulihkan.</p>
+${cn("undo",l?"Hapus sesi terakhir ("+l.d+", "+D[l.i].d+")":"Hapus sesi terakhir",!!l)}${cn("reset","Reset semua progres ke awal",true)}${cn("restore",S.bak?"Pulihkan data sebelum reset":"Pulihkan data (belum ada cadangan)",!!S.bak)}</div>
+<div class="card"><b>Cadangan data</b><p class="sub" style="margin:4px 0 8px">Salin teks cadangan dan simpan di catatan Anda. Tempel kembali di perangkat lain untuk memindahkan progres.</p>
+<textarea id="bk" rows="4" style="width:100%;background:#0f0f0f;border:1px solid var(--line);border-radius:10px;color:var(--tx);padding:10px;font-size:13px" aria-label="Teks cadangan"></textarea>
+<button class="btn" style="margin-top:10px" data-act="exp">Buat dan salin cadangan</button>${cn("imp","Pulihkan dari teks di atas",true)}<p class="sub" id="sm" style="margin-top:8px"></p></div>`}
+function act(t){const a=t.dataset.act;
+if(["undo","reset","restore","imp"].includes(a)&&cf!==a){cf=a;t.textContent="Tekan lagi untuk konfirmasi";setTimeout(()=>{if(cf===a){cf=null;if(tab==="set")render()}},4000);return}
+cf=null;
+if(a==="exp"){const b={...S};delete b.bak;const x=$("#bk");x.value=JSON.stringify(b);x.select();let ok=false;try{navigator.clipboard.writeText(x.value);ok=true}catch(e){}$("#sm").textContent=ok?"Cadangan disalin. Simpan teksnya di tempat aman.":"Salin teks di kotak secara manual.";return}
+if(a==="undo"){S.log.pop();M="Sesi terakhir dihapus."}
+else if(a==="reset"){const b={...S};delete b.bak;S={log:[],bak:b,rm:S.rm};M="Progres kembali ke awal. Data lama bisa dipulihkan."}
+else if(a==="restore"&&S.bak){S={...S.bak,rm:S.rm};M="Data sebelum reset sudah dipulihkan."}
+else if(a==="rmsave"){S.rm={on:$("#rmo").value==="1",t:$("#rmt").value||"17:00"};if(S.rm.on&&"Notification" in window&&Notification.permission==="default")try{Notification.requestPermission()}catch(e){}M=S.rm.on?"Pengingat aktif pukul "+S.rm.t+".":"Pengingat dimatikan."}
+else if(a==="imp"){try{const o=JSON.parse($("#bk").value);if(!Array.isArray(o.log))throw 0;const b={...S};delete b.bak;S={...o,bak:b,rm:o.rm||S.rm};M="Data berhasil dipulihkan. Data sebelumnya dicadangkan."}catch(e){$("#sm").textContent="Teks cadangan tidak valid.";return}}
+else return;
+save();render()}
+function render(){if(run)return;$("#nav").classList.remove("hide");$("#app").innerHTML=tab==="home"?home():tab==="train"?train():tab==="hist"?hist():tab==="nut"?nut():tab==="test"?test():tab==="set"?set():plan();
+document.querySelectorAll(".nav button").forEach(b=>b.classList.toggle("on",b.dataset.t===tab))}
+document.addEventListener("change",e=>{if(e.target.id==="bw"){const v=+e.target.value;S.bw=v>=30&&v<=250?v:70;S.wl=(S.wl||[]).filter(x=>x.d!==today());S.wl.push({d:today(),kg:S.bw});save();if(tab==="hist")render()}});
+document.addEventListener("click",e=>{const t=e.target.closest("button");if(!t)return;
+if(t.dataset.w){S.w=S.w||{};S.w[today()]=Math.max(0,(S.w[today()]||0)+ +t.dataset.w);save();return render()}
+if(t.dataset.rpe){const l=S.log[S.log.length-1];if(l){l.rpe=t.dataset.rpe;save()}$("#rm").textContent="Tersimpan. Saran sesi berikutnya ada di tab Latihan.";return}
+if(t.dataset.act){return act(t)}
+if(t.id==="ts"){const a=+$("#t1").value,b=+$("#t2").value,c=+$("#t3").value;if(!(a>0||b>0||c>0)){$("#tm").textContent="Isi minimal satu hasil tes.";return}
+const pts=sc(a,25,40)+sc(b,30,60)+sc(c,15,30),lv=pts<=1?0:pts<=3?1:2;S.tests=(S.tests||[]).concat({d:today(),sq:a,pl:b,dh:c,pts,a:sc(a,25,40),b:sc(b,30,60),c:sc(c,15,30)});S.base=LV[lv][1];save();return render()}
+if(t.id==="nc"){const h=+$("#nh").value,a=+$("#na").value;if(h>=120&&h<=230&&a>=10&&a<=90){S.pf={h,a,sx:$("#ns").value};save();render()}return}
+if(t.dataset.t){tab=t.dataset.t;M="";return render()}
+if(t.dataset.t2){tab=t.dataset.t2;M="";return render()}
+if(t.dataset.sel){sel=+t.dataset.sel;return render()}
+if(t.dataset.go){const d=+t.dataset.go;run={d,st:steps(D[d]),i:0,s:0,k:0};$("#nav").classList.add("hide");return runUI()}
+if(t.dataset.q){clearInterval(ct);run=null;return render()}
+if(t.id==="ct"){let n=run.st[run.i].sec;t.disabled=true;ct=setInterval(()=>{n--;t.textContent=n>0?n+" dtk":"Waktu habis";if(n<=0){clearInterval(ct);try{navigator.vibrate(300)}catch(e){}}},1000);t.textContent=n+" dtk";return}
+if(t.id==="ok"){clearInterval(ct);done()}});
+render();
+</script><script>if('serviceWorker' in navigator&&location.protocol.indexOf('http')===0)navigator.serviceWorker.register('sw.js').catch(function(){})</script>
+</body></html>
